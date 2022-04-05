@@ -23,11 +23,11 @@ class Patient(models.Model):
         on_delete=models.CASCADE,
         primary_key=True,
     )
-    vaccination_appointment = models.ForeignKey("VaccinationAppointment", null=False)
+    vaccination_appointment = models.ForeignKey("VaccinationAppointment", null=False, on_delete=models.CASCADE)
 
 
 class VaccinationAppointment(models.Model):
-    vaccine = models.ForeignKey("Vaccine", null=False)
+    vaccine = models.ForeignKey("Vaccine", null=False, on_delete=models.CASCADE)
     date_appointment = models.DateField()
     time_appointment = models.TimeField()
     PENDING = 'Pending'
