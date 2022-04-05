@@ -27,7 +27,6 @@ class Patient(models.Model):
 
 
 class VaccinationAppointment(models.Model):
-    vaccine = models.ForeignKey("Vaccine", null=False, on_delete=models.CASCADE)
     date_appointment = models.DateField()
     time_appointment = models.TimeField()
     PENDING = 'Pending'
