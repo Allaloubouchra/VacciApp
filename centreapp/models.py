@@ -8,16 +8,16 @@ class Staff(models.Model):
         on_delete=models.CASCADE,
         primary_key=True,
     )
-    vaccine_centre = models.ForeignKey("VaccineCentre", null=False)
+    vaccine_centre = models.ForeignKey("VaccineCentre", null=False, on_delete=models.CASCADE)
 
 
 class Doctor(Staff):
-    vaccination_appointment = models.ForeignKey("VaccinationAppointment", null=False)
+    vaccination_appointment = models.ForeignKey("VaccinationAppointment", null=False, on_delete=models.CASCADE)
 
 
 class Receptionist(Staff):
-    vaccination_appointment = models.ForeignKey("VaccinationAppointment", null=False)
-    vaccine = models.ForeignKey("Vaccine", null=False)
+    vaccination_appointment = models.ForeignKey("VaccinationAppointment", null=False, on_delete=models.CASCADE)
+    vaccine = models.ForeignKey("Vaccine", null=False,on_delete=models.CASCADE)
 
 
 class Survey(models.Model):
@@ -26,7 +26,7 @@ class Survey(models.Model):
         on_delete=models.CASCADE,
         primary_key=True,
     )
-    doctor = models.ForeignKey("Doctor", null=False)
+    doctor = models.ForeignKey("Doctor", null=False, on_delete=models.CASCADE)
 
 
 class VaccineCentre(models.Model):
@@ -39,7 +39,7 @@ class VaccineCentre(models.Model):
 class Vaccine(models.Model):
     name = models.CharField(max_length=50)
     time_between_dose = models.IntegerField()
-    vaccination_appointment = models.ForeignKey("VaccinationAppointment", null=False)
+    vaccination_appointment = models.ForeignKey("VaccinationAppointment", null=False, on_delete=models.CASCADE)
     vaccine_centre = models.ManyToManyField("VaccineCentre")
 
 
