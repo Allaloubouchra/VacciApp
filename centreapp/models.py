@@ -40,6 +40,7 @@ class Vaccine(models.Model):
     name = models.CharField(max_length=50)
     time_between_dose = models.IntegerField()
     vaccination_appointment = models.ForeignKey("VaccinationAppointment", null=False, on_delete=models.CASCADE)
+    vaccination_appointment = models.ForeignKey("VaccinationAppointment", null=False,)
     vaccine_centre = models.ManyToManyField("VaccineCentre")
 
 
