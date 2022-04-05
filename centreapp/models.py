@@ -1,4 +1,48 @@
 from django.db import models
+from patientapp.models import Account, VaccinationAppointment
+
+
+class Staff(models.Model):
+    account = models.OneToOneField(
+        Account,
+        on_delete=models.CASCADE,
+        primary_key=True,
+    )
+    vaccine_centre = models.Foreignkey("VaccineCentre", null=False)
+
+
+class Doctor(Staff):
+    vaccination_appointment = models.ForeignKey("VaccinationAppointment", null=False)
+
+
+class Receptionist(Staff):
+    vaccination_appointment = models.ForeignKey("VaccinationAppointment", null=False)
+    vaccine = models.Foreignkey("Vaccine", null=False)
+
+
+class Survey(models.Model):
+    vaccination_appointment = models.OneToOneField(
+        VaccinationAppointment,
+        on_delete=models.CASCADE,
+        primary_key=True,
+    )
+    doctor = models.ForeignKey("Doctor", null=False)
+
+
+class VaccineCentre(models.Model):
+    name = models.CharField(max_length=50)
+    address = models.CharField(max_length=100)
+    num_phone = models.CharField(max_length=500)
+    vaccination_appointment = models.ManyToManyField("VaccinationAppointment")
+
+
+class Vaccine(models.Model):
+    name = models.CharField(max_length=50)
+    time_between_dose = models.IntegerFaield()
+    vaccination_appointment = models.ForeignKey("VaccinationAppointment", null=False)
+    vaccine_centre = models.ManyToManyField("VaccineCentre")
+
+
 
 
 

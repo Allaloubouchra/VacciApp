@@ -23,6 +23,7 @@ class Patient(models.Model):
         on_delete=models.CASCADE,
         primary_key=True,
     )
+    vaccination_appointment = models.ForeignKey("VaccinationAppointment", null=False)
 
 
 class VaccinationAppointment(models.Model):
