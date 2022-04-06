@@ -10,7 +10,12 @@ class Account(models.Model):
     email = models.EmailField(max_length=50)
     password = models.CharField(max_length=50)
     address = models.CharField(max_length=100)
-    gender = models.CharField(max_length=30)
+    MALE = 'Male'
+    FEMALE = 'Female'
+    GENDER_CHOICES = (
+        ('MALE', 'Male'),
+        ('FEMALE', 'Female'),
+    )
 
     @property
     def age(self):
@@ -29,6 +34,8 @@ class Patient(models.Model):
 class VaccinationAppointment(models.Model):
     date_appointment = models.DateField()
     time_appointment = models.TimeField()
+    num_dose = models.IntegerField()
+    arm = models.CharField(max_length=30)
     PENDING = 'Pending'
     CONFIRMED = 'confirmed'
     CANCELED = 'Canceled'
@@ -37,8 +44,6 @@ class VaccinationAppointment(models.Model):
         (CONFIRMED, 'confirmed'),
         (CANCELED, 'Canceled'),
     ]
-    num_dose = models.IntegerField()
-    arm = models.CharField(max_length=30)
 
 
 
