@@ -10,7 +10,12 @@ class Account(models.Model):
     email = models.EmailField(max_length=50)
     password = models.CharField(max_length=50)
     address = models.CharField(max_length=100)
-    gender = models.CharField(max_length=30)
+    MALE = 'Male'
+    FEMALE = 'Female'
+    GENDER_CHOICES = (
+        ('MALE', 'Male'),
+        ('FEMALE', 'Female'),
+    )
 
     @property
     def age(self):
