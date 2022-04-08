@@ -1,14 +1,15 @@
+from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
 
 
 class Account(models.Model):
-    first_name = models.CharField(max_length=50, unique=True)
-    last_name = models.CharField(max_length=50, unique=True)
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        primary_key=True, )
     birthday = models.DateField()
     phone_num = models.CharField(max_length=30)
-    email = models.EmailField(max_length=50)
-    password = models.CharField(max_length=50)
     address = models.CharField(max_length=100)
     MALE = 'Male'
     FEMALE = 'Female'
@@ -16,6 +17,7 @@ class Account(models.Model):
         ('MALE', 'Male'),
         ('FEMALE', 'Female'),
     )
+    gender = models.CharField(choices=GENDER_CHOICES, max_length=30)
 
     @property
     def age(self):
@@ -28,7 +30,6 @@ class Patient(models.Model):
         on_delete=models.CASCADE,
         primary_key=True,
     )
-    vaccination_appointment = models.ForeignKey("VaccinationAppointment", null=False, on_delete=models.CASCADE)
 
 
 class VaccinationAppointment(models.Model):
@@ -36,6 +37,10 @@ class VaccinationAppointment(models.Model):
     time_appointment = models.TimeField()
     num_dose = models.IntegerField()
     arm = models.CharField(max_length=30)
+    patient = models.ForeignKey("Patient", null=False, on_delete=models.CASCADE, related_name="appointments")
+    doctor = models.ForeignKey("centreapp.Doctor", null=False, on_delete=models.CASCADE, )
+    vaccine = models.ForeignKey("centreapp.Vaccine", null=False, on_delete=models.CASCADE)
+    receptionist = models.ForeignKey("centreapp.Receptionist", null=False, on_delete=models.CASCADE)
     PENDING = 'Pending'
     CONFIRMED = 'confirmed'
     CANCELED = 'Canceled'
@@ -44,6 +49,5 @@ class VaccinationAppointment(models.Model):
         (CONFIRMED, 'confirmed'),
         (CANCELED, 'Canceled'),
     ]
-
-
+    status = models.CharField(choices=STATUS_CHOICES, max_length=30)
 

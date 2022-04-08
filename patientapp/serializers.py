@@ -13,7 +13,7 @@ class AccountSerializer(serializers.ModelSerializer):
 
 
 class PatientSerializer(serializers.ModelSerializer):
-    vaccination_appointment_patient = serializers.RelatedField(source='vaccination_appointment', read_only=True)
+
     first_name = serializers.CharField(source='Patient.account.first_name')
     last_name = serializers.CharField(source='Patient.account.last_name')
     birthday = serializers.DateField(source='Patient.account.birthday')
@@ -24,17 +24,21 @@ class PatientSerializer(serializers.ModelSerializer):
     choices = serializers.ChoiceField(choices=Account.GENDER_CHOICES)
 
     class Meta:
-        fields = ('id', 'vaccination_appointment_patient', 'first_name', 'last_name', 'birthday', 'phone_num', 'email',
+        fields = ('id','first_name', 'last_name', 'birthday', 'phone_num', 'email',
                   'password', 'address', 'choices')
         model = Patient
 
 
 class VaccinationAppointmentSerializer(serializers.ModelSerializer):
+    patient = serializers.RelatedField(source='patient', read_only=True)
+    doctor = serializers.RelatedField(source='doctor', read_only=True)
+    vaccine = serializers.RelatedField(source='vaccine', read_only=True)
+    receptionist = serializers.RelatedField(source='receptionist', read_only=True)
     choices = serializers.ChoiceField(choices=VaccinationAppointment.STATUS_CHOICES)
 
     class Meta:
-        fields = ('date_appointment', 'time_appointment', 'PENDING', 'CONFIRMED', 'CANCELED', 'choices', 'num_dose',
-                  'arm')
+        fields = ('patient', 'doctor', 'vaccine', 'receptionist', 'date_appointment', 'time_appointment', 'choices',
+                  'num_dose', 'arm')
         model = VaccinationAppointment
 
 
