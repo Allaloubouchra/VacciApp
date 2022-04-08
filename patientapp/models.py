@@ -4,10 +4,12 @@ from django.utils import timezone
 
 
 class Account(models.Model):
-    user = models.OneToOneField(
-        User,
-        on_delete=models.CASCADE,
-        primary_key=True, )
+
+    #  user = models.OneToOneField(
+    #  User,
+    #  on_delete=models.CASCADE,
+    #  primary_key=True, )
+
     birthday = models.DateField()
     phone_num = models.CharField(max_length=30)
     address = models.CharField(max_length=100)
@@ -50,4 +52,3 @@ class VaccinationAppointment(models.Model):
         (CANCELED, 'Canceled'),
     ]
     status = models.CharField(choices=STATUS_CHOICES, max_length=30)
-

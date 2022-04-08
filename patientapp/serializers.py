@@ -7,25 +7,19 @@ class AccountSerializer(serializers.ModelSerializer):
     choices = serializers.ChoiceField(choices=Account.GENDER_CHOICES)
 
     class Meta:
-        fields = ('first_name', 'last_name', 'birthday', 'phone_num', 'email', 'password', 'address', 'age', 'choices',
-                  'MALE', 'FEMALE')
+        fields = ('birthday', 'phone_num', 'address', 'age', 'choices')
         model = Account
 
 
 class PatientSerializer(serializers.ModelSerializer):
 
-    first_name = serializers.CharField(source='Patient.account.first_name')
-    last_name = serializers.CharField(source='Patient.account.last_name')
     birthday = serializers.DateField(source='Patient.account.birthday')
     phone_num = serializers.CharField(source='Patient.account.phone_num')
-    email = serializers.EmailField(source='Patient.account.email')
-    password = serializers.CharField(source='Patient.account.password')
     address = serializers.CharField(source='Patient.account.address')
     choices = serializers.ChoiceField(choices=Account.GENDER_CHOICES)
 
     class Meta:
-        fields = ('id','first_name', 'last_name', 'birthday', 'phone_num', 'email',
-                  'password', 'address', 'choices')
+        fields = ('id', 'birthday', 'phone_num', 'address', 'choices')
         model = Patient
 
 
