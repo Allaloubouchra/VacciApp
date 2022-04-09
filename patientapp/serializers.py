@@ -7,7 +7,7 @@ class AccountSerializer(serializers.ModelSerializer):
     choices = serializers.ChoiceField(choices=Account.GENDER_CHOICES)
 
     class Meta:
-        fields = ('birthday', 'phone_num', 'address', 'age', 'choices')
+        fields = ('user', 'birthday', 'phone_num', 'address', 'age', 'choices')
         model = Account
 
 
