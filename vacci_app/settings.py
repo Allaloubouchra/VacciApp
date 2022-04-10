@@ -15,7 +15,6 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
@@ -26,7 +25,6 @@ SECRET_KEY = 'django-insecure-g)+^muqee!-8ou8*5z&+_kn^2jq#8ub*0ux0m3(c!d-f8j+k*%
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -41,7 +39,7 @@ INSTALLED_APPS = [
     'patientapp',
     'centreapp',
     'rest_framework.authtoken',
-
+    'knox',
 ]
 
 MIDDLEWARE = [
@@ -74,19 +72,18 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'vacci_app.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
 DATABASES = {
-   'default': {
-      'ENGINE': 'django.db.backends.postgresql_psycopg2',
-      'NAME': 'pfe',
-      'USER': 'postgres',
-      'PASSWORD': 'soumiasoumia',
-      'HOST': 'localhost',
-      'PORT': '5432',
-   }
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'pfe',
+        'USER': 'postgres',
+        'PASSWORD': 'soumiasoumia',
+        'HOST': 'localhost',
+        'PORT': '5432',
+    }
 }
 
 # Password validation
@@ -107,7 +104,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
@@ -118,7 +114,6 @@ TIME_ZONE = 'Etc/GMT+1'
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
@@ -132,7 +127,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.TokenAuthentication',
-
     ]
 }

@@ -1,4 +1,7 @@
-from rest_framework import serializers
+from rest_framework import serializers, status
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+
 from patientapp.models import *
 
 
@@ -7,12 +10,11 @@ class AccountSerializer(serializers.ModelSerializer):
     choices = serializers.ChoiceField(choices=Account.GENDER_CHOICES)
 
     class Meta:
-        fields = ('user', 'birthday', 'phone_num', 'address', 'age', 'choices')
+        fields = ('birthday', 'phone_num', 'address', 'age', 'choices')
         model = Account
 
 
 class PatientSerializer(serializers.ModelSerializer):
-
     birthday = serializers.DateField(source='Patient.account.birthday')
     phone_num = serializers.CharField(source='Patient.account.phone_num')
     address = serializers.CharField(source='Patient.account.address')
@@ -36,7 +38,10 @@ class VaccinationAppointmentSerializer(serializers.ModelSerializer):
         model = VaccinationAppointment
 
 
+class UserSerializer(serializers.ModelSerializer):
+    patient = PatientSerializer(many=True, read_only=True)
 
-
-
+    class Meta:
+        model = User
+        fields = ('patient', 'id', 'username', 'email')
 
