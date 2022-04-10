@@ -2,6 +2,7 @@ from rest_framework import serializers
 from centreapp.models import *
 from patientapp.models import Account, VaccinationAppointment
 from patientapp.serializers import VaccinationAppointmentSerializer
+from django.contrib.auth.models import User
 
 
 class StaffSerializer(serializers.ModelSerializer):
@@ -21,7 +22,18 @@ class StaffSerializer(serializers.ModelSerializer):
         model = Staff
 
 
+class UserSerializer(serializers.ModelSerializer):
+    staff = StaffSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = User
+        fields = ('staff', 'id', 'username', 'email')
+
+
 class DoctorSerializer(StaffSerializer):
+    # specialite
+    # poste
+    # grade
     vaccination_appointment_doctor = serializers.RelatedField(source="vaccination_appointment", read_only=True)
 
     class Meta:
@@ -61,7 +73,7 @@ class VaccineCentreSerializer(serializers.ModelSerializer):
 
 class VaccineSerializer(serializers.ModelSerializer):
     vaccination_appointment_vaccine = serializers.RelatedField(source="vaccination_appointment", read_only=True)
-    vaccine_centre = VaccineCentre(read_only=True, many=True)
+    vaccine_centre = VaccineCentre()
 
     class Meta:
         fields = ("name", "time_between_dose", "num_phone", "vaccination_appointment_vaccine", "vaccine_centre",)
