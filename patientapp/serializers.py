@@ -6,6 +6,7 @@ from patientapp.models import *
 
 
 class AccountSerializer(serializers.ModelSerializer):
+    # user one to one field
     age = serializers.Field()
     choices = serializers.ChoiceField(choices=Account.GENDER_CHOICES)
 
