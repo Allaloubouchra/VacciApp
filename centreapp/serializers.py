@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 
 
 class StaffSerializer(serializers.ModelSerializer):
+    # user serializer
     first_name = serializers.CharField(source='Patient.account.first_name')
     last_name = serializers.CharField(source='Patient.account.last_name')
     birthday = serializers.DateField(source='Patient.account.birthday')
@@ -14,10 +15,9 @@ class StaffSerializer(serializers.ModelSerializer):
     password = serializers.CharField(source='Patient.account.password')
     address = serializers.CharField(source='Patient.account.address')
     choices = serializers.ChoiceField(choices=Account.GENDER_CHOICES)
-    vaccination_centre_staff = serializers.RelatedField(source='vaccine_centre', read_only=True)
 
     class Meta:
-        fields = ('id', 'vaccination_appointment_staff', 'first_name', 'last_name', 'birthday', 'phone_num', 'email',
+        fields = ('id', 'first_name', 'last_name', 'birthday', 'phone_num', 'email',
                   'password', 'address', 'choices')
         model = Staff
 
@@ -31,22 +31,17 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class DoctorSerializer(StaffSerializer):
-    # specialite
-    # poste
-    # grade
     vaccination_appointment_doctor = serializers.RelatedField(source="vaccination_appointment", read_only=True)
 
     class Meta:
-        fields = StaffSerializer.Meta.fields+("id", "vaccination_appointment_doctor",)
+        fields = StaffSerializer.Meta.fields+("id", "speciality", "position", "post", "vaccination_appointment_doctor",)
         # model = Staff
 
 
 class ReceptionistSerializer(StaffSerializer):
-    vaccination_appointment_receptionist = serializers.RelatedField(source="vaccination_appointment", read_only=True)
-    vaccine_receptionist = serializers.RelatedField(source="vaccine", read_only=True)
 
     class Meta:
-        fields = StaffSerializer.Meta.fields + ("id", "vaccination_appointment_receptionist", "vaccine_receptionist ",)
+        fields = StaffSerializer.Meta.fields + ("id",)
         # model = Staff
 
 
@@ -56,15 +51,17 @@ class SurveySerializer(serializers.ModelSerializer):
     num_dose = serializers.IntegerField(source='vaccination_appointment.num_dose')
     arm = serializers.CharField(source='vaccination_appointment.arm')
     choices = serializers.ChoiceField(choices=VaccinationAppointment.STATUS_CHOICES)
-    doctor_survey = serializers.RelatedField(source="doctor", read_only=True)
 
     class Meta:
-        fields = ("id", "date_appointment", " time_appointment ", "num_dose", "arm ", "choices ", "doctor_survey")
+        fields = ("id", "date_appointment", " time_appointment ", "num_dose", "arm ", "choices ", "doctor_survey",
+                  "positive_covid", "contamination", "disease", "temperature,heart_rate",
+                  "respiratory_rate", "blood_pressure,oximetry")
         model = Survey
 
 
 class VaccineCentreSerializer(serializers.ModelSerializer):
     vaccination_appointment = VaccinationAppointmentSerializer(read_only=True, many=True)
+    # create method
 
     class Meta:
         fields = ("id", "name", "address", "num_phone", "vaccination_appointment")
@@ -72,9 +69,9 @@ class VaccineCentreSerializer(serializers.ModelSerializer):
 
 
 class VaccineSerializer(serializers.ModelSerializer):
-    vaccination_appointment_vaccine = serializers.RelatedField(source="vaccination_appointment", read_only=True)
-    vaccine_centre = VaccineCentre()
+    vaccine_centre = VaccineCentre(read_only=True, many=True)
+    # create method
 
     class Meta:
-        fields = ("name", "time_between_dose", "num_phone", "vaccination_appointment_vaccine", "vaccine_centre",)
+        fields = ("name", "time_between_dose", "num_phone", "vaccine_centre",)
         model = Vaccine
