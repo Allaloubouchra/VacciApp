@@ -39,7 +39,6 @@ INSTALLED_APPS = [
     'patientapp',
     'centreapp',
     'rest_framework.authtoken',
-    'knox',
 ]
 
 MIDDLEWARE = [

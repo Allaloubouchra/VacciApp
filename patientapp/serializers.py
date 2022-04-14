@@ -1,7 +1,4 @@
-from rest_framework import serializers, status
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-
+from rest_framework import serializers
 from patientapp.models import *
 
 
@@ -44,5 +41,16 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('patient', 'id', 'username', 'email')
+        fields = ('patient', 'id', 'username', 'email', 'address')
 
+
+class RegisterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'email', 'password')
+        extra_kwargs = {'password': {'write_only': True}}
+
+    def create(self, validated_data):
+        user = User.objects.create_user(validated_data['username'], validated_data['email'], validated_data['password'])
+
+        return user
