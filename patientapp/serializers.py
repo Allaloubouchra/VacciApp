@@ -83,3 +83,4 @@ class VaccinationAppointmentSerializer(serializers.ModelSerializer):
                 "write_only": True,
             },
         }
+
