@@ -1,5 +1,4 @@
 from rest_framework import serializers
-
 from centreapp.serializers import VaccineSerializer, VaccineCentreSerializer
 from patientapp.models import *
 
