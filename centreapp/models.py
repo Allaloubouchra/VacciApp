@@ -2,23 +2,19 @@ from django.db import models
 from patientapp.models import Account, VaccinationAppointment
 
 
-class Staff(models.Model):
-    account = models.OneToOneField(
-        Account,
-        on_delete=models.CASCADE,
-        primary_key=True,
-    )
-    vaccine_centre = models.ForeignKey("VaccineCenter", null=False, on_delete=models.CASCADE)
+class Wilaya(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    matricule = models.PositiveIntegerField()
 
 
-class Doctor(Staff):
-    speciality = models.CharField(max_length=50)
-    position = models.CharField(max_length=50)
-    post = models.CharField(max_length=50)
+class City(models.Model):
+    name = models.CharField(max_length=255)
+    matricule = models.PositiveIntegerField()
+    wilaya = models.ForeignKey(Wilaya, on_delete=models.CASCADE, related_name="cities")
 
 
-class Receptionist(Staff):
-    pass
+class Disease(models.Model):
+    name = models.CharField(max_length=255, unique=True)
 
 
 class Survey(models.Model):
@@ -27,25 +23,45 @@ class Survey(models.Model):
         on_delete=models.CASCADE,
         primary_key=True,
     )
-    positive_covid = models.CharField(max_length=50)
-    contamination = models.CharField(max_length=50)
-    disease = models.CharField(max_length=50)
-    temperature = models.CharField(max_length=50)
-    heart_rate = models.PositiveIntegerField(max_length=50)
-    respiratory_rate = models.PositiveIntegerField(max_length=50)
-    blood_pressure = models.CharField(max_length=50)
-    oximetry = models.CharField(max_length=50)
+    positive_covid = models.BooleanField(default=False)
+    contamination = models.BooleanField(default=False)
+    disease = models.ManyToManyField(Disease, blank=True)
+    temperature = models.DecimalField(decimal_places=2, max_digits=5)
+    heart_rate = models.PositiveIntegerField()
+    respiratory_rate = models.PositiveIntegerField()
+    blood_pressure = models.DecimalField(decimal_places=2, max_digits=5)
+    oximetry = models.DecimalField(decimal_places=2, max_digits=5)
 
 
 class VaccineCentre(models.Model):
-
     name = models.CharField(max_length=50)
-    address = models.CharField(max_length=100)
-    num_phone = models.CharField(max_length=500)
-    vaccination_appointment = models.ManyToManyField("patientapp.VaccinationAppointment")
+    address = models.TextField(max_length=1000)
+    num_phone = models.CharField(max_length=14)
+    latitude = models.DecimalField(decimal_places=10, max_digits=20)
+    longitude = models.DecimalField(decimal_places=10, max_digits=20)
+    city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='centres')
+
+    # TODO add more information about openning and closing, available or not, working hours...
+
+
+class Doctor(models.Model):
+    account = models.OneToOneField(
+        Account,
+        on_delete=models.CASCADE,
+        primary_key=True,
+    )
+    speciality = models.CharField(max_length=50)
+    position = models.CharField(max_length=50)
+    post = models.CharField(max_length=50)
 
 
 class Vaccine(models.Model):
     name = models.CharField(max_length=50)
-    time_between_dose = models.IntegerField()  # ajouter une methode
-    vaccine_centre = models.ManyToManyField("VaccineCentre")
+    time_between_dose = models.IntegerField()
+    vaccine_centre = models.ManyToManyField("VaccineCentre",through='VaccineAndCentre')
+
+
+class VaccineAndCentre(models.Model):
+    centre = models.ForeignKey(VaccineCentre, on_delete=models.CASCADE, related_name='vaccines')
+    vaccine = models.ForeignKey(Vaccine, on_delete=models.CASCADE, related_name='centres')
+    available = models.BooleanField(default=True)

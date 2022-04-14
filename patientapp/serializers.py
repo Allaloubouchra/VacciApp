@@ -1,56 +1,86 @@
 from rest_framework import serializers
+from centreapp.serializers import VaccineSerializer, VaccineCentreSerializer
 from patientapp.models import *
 
 
 class AccountSerializer(serializers.ModelSerializer):
-    # user one to one field
-    age = serializers.Field()
-    choices = serializers.ChoiceField(choices=Account.GENDER_CHOICES)
-
     class Meta:
-        fields = ('birthday', 'phone_num', 'address', 'age', 'choices')
+        fields = (
+            'id',
+            'user',
+            'user_type',
+            'get_user_type_display',
+            'birthday',
+            'phone_num',
+            'address',
+            'age',
+            'gender',
+            'vaccine_centre'
+        )
         model = Account
 
 
-class PatientSerializer(serializers.ModelSerializer):
-    birthday = serializers.DateField(source='Patient.account.birthday')
-    phone_num = serializers.CharField(source='Patient.account.phone_num')
-    address = serializers.CharField(source='Patient.account.address')
-    choices = serializers.ChoiceField(choices=Account.GENDER_CHOICES)
+class UserSerializer(serializers.ModelSerializer):
+    account = AccountSerializer(required=False)
 
     class Meta:
-        fields = ('id', 'birthday', 'phone_num', 'address', 'choices')
-        model = Patient
+        model = User
+        fields = (
+            'id',
+            'username',
+            'email',
+            'first_name',
+            'last_name',
+            'last_login',
+            'is_staff',
+            'is_superuser',
+            'account',
+        )
 
 
 class VaccinationAppointmentSerializer(serializers.ModelSerializer):
-    patient = serializers.RelatedField(source='patient', read_only=True)
-    doctor = serializers.RelatedField(source='doctor', read_only=True)
-    vaccine = serializers.RelatedField(source='vaccine', read_only=True)
-    receptionist = serializers.RelatedField(source='receptionist', read_only=True)
-    choices = serializers.ChoiceField(choices=VaccinationAppointment.STATUS_CHOICES)
+    patient = AccountSerializer(read_only=True)
+    doctor = AccountSerializer(read_only=True)
+    receptionist = AccountSerializer(read_only=True)
+    vaccine = VaccineSerializer(read_only=True)
+    centre = VaccineCentreSerializer(read_only=True)
 
     class Meta:
-        fields = ('patient', 'doctor', 'vaccine', 'receptionist', 'date_appointment', 'time_appointment', 'choices',
-                  'num_dose', 'arm')
+        fields = (
+            'id',
+            'appointment_date',
+            'num_dose',
+            'arm',
+            'get_arm_display',
+            'patient',
+            'patient_id',
+            'doctor',
+            'doctor_id',
+            'receptionist',
+            'receptionist_id',
+            'vaccine',
+            'vaccine_id',
+            'status',
+            'get_status_display',
+            'centre',
+            'centre_id',
+        )
         model = VaccinationAppointment
+        extra_kwargs = {
+            "patient_id": {
+                "write_only": True,
+            },
+            "doctor_id": {
+                "write_only": True,
+            },
+            "receptionist_id": {
+                "write_only": True,
+            },
+            "vaccine_id": {
+                "write_only": True,
+            },
+            "centre_id": {
+                "write_only": True,
+            },
+        }
 
-
-class UserSerializer(serializers.ModelSerializer):
-    patient = PatientSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = User
-        fields = ('patient', 'id', 'username', 'email', 'address')
-
-
-class RegisterSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ('id', 'username', 'email', 'password')
-        extra_kwargs = {'password': {'write_only': True}}
-
-    def create(self, validated_data):
-        user = User.objects.create_user(validated_data['username'], validated_data['email'], validated_data['password'])
-
-        return user
