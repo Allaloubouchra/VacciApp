@@ -1,49 +1,61 @@
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
+
+from patientapp import UserType, GenderType, AppointmentStatus, Arms
 
 
 class Account(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
+    user_type = models.CharField(choices=UserType.USER_TYPE_CHOICES, max_length=1)
     birthday = models.DateField()
-    phone_num = models.CharField(max_length=30)
+    phone_num = models.CharField(max_length=14)
     address = models.CharField(max_length=100)
-    MALE = 'Male'
-    FEMALE = 'Female'
-    GENDER_CHOICES = (
-        ('MALE', 'Male'),
-        ('FEMALE', 'Female'),
-    )
-    gender = models.CharField(choices=GENDER_CHOICES, max_length=30)
+    gender = models.CharField(choices=GenderType.GENDER_CHOICES, max_length=1)
+    vaccine_centre = models.ForeignKey("VaccineCentre", null=True, blank=True, on_delete=models.CASCADE)
 
     @property
     def age(self):
         return timezone.now().year - self.birthday.year
 
+    def is_patient(self):
+        return self.user_type == UserType.PATIENT
 
-class Patient(models.Model):
-    account = models.OneToOneField(
-        Account,
-        on_delete=models.CASCADE,
-        primary_key=True,
-    )
+    def is_doctor(self):
+        return self.user_type == UserType.DOCTOR
+
+    def is_receptionist(self):
+        return self.user_type == UserType.RECEPTIONIST
+
+
+    @classmethod
+    def get_patients_ids(cls):
+        return Account.objects.filter(user_type=UserType.PATIENT).values_list('id', flat=True)
+
+    @classmethod
+    def get_doctors_ids(cls):
+        return Account.objects.filter(user_type=UserType.DOCTOR).values_list('id', flat=True)
+
+    @classmethod
+    def get_receptionists_ids(cls):
+        return Account.objects.filter(user_type=UserType.RECEPTIONIST).values_list('id', flat=True)
 
 
 class VaccinationAppointment(models.Model):
-    date_appointment = models.DateField()
-    time_appointment = models.TimeField()
+    appointment_date = models.DateTimeField(verbose_name=_('Appointment Date'))
     num_dose = models.IntegerField()
-    arm = models.CharField(max_length=30)
-    patient = models.ForeignKey("Patient", null=False, on_delete=models.CASCADE, related_name="appointments")
-    doctor = models.ForeignKey("centreapp.Doctor", null=False, on_delete=models.CASCADE, )
+    arm = models.CharField(max_length=1, choices=Arms.ARMS_CHOICES, null=True, blank=True)
+    patient = models.ForeignKey(Account, on_delete=models.CASCADE, related_name="p_appointments",
+                                limit_choices_to={'id__in': Account.get_patients_ids})
+    doctor = models.ForeignKey(Account, null=True, blank=True, on_delete=models.CASCADE, related_name="d_appointments",
+                               limit_choices_to={'id__in': Account.get_doctors_ids})
+    receptionist = models.ForeignKey(Account, null=True, blank=True, on_delete=models.CASCADE,
+                                     related_name="confirmed_app",
+                                     limit_choices_to={'id__in': Account.get_receptionists_ids})
     vaccine = models.ForeignKey("centreapp.Vaccine", null=False, on_delete=models.CASCADE)
-    receptionist = models.ForeignKey("centreapp.Receptionist", null=False, on_delete=models.CASCADE)
-    PENDING = 'Pending'
-    CONFIRMED = 'confirmed'
-    CANCELED = 'Canceled'
-    STATUS_CHOICES = [
-        (PENDING, 'Pending'),
-        (CONFIRMED, 'confirmed'),
-        (CANCELED, 'Canceled'),
-    ]
-    status = models.CharField(choices=STATUS_CHOICES, max_length=30)
+    status = models.CharField(choices=AppointmentStatus.STATUS_CHOICES, max_length=2, default=AppointmentStatus.PENDING)
+    centre = models.ForeignKey("centreapp.VaccineCentre", on_delete=models.CASCADE, related_name="appointments")
+
+    def date_for_next_appointment(self):
+        pass
