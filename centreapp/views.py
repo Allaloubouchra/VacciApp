@@ -6,12 +6,13 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
 from centreapp.models import Survey
-from patientapp.serializers import UserSerializer
+
 from centreapp.serializers import SurveySerializer
 
 
 class RegisterApi(generics.GenericAPIView):
     def post(self, request):
+        from patientapp.serializers import UserSerializer
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()

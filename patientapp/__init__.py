@@ -17,8 +17,8 @@ class GenderType:
     MALE = 'M'
     FEMALE = 'F'
     GENDER_CHOICES = (
-        ('MALE', _('Male')),
-        ('FEMALE', _('Female')),
+        (MALE, _('Male')),
+        (FEMALE, _('Female')),
     )
 
 

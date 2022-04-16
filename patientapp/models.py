@@ -13,7 +13,7 @@ class Account(models.Model):
     phone_num = models.CharField(max_length=14)
     address = models.CharField(max_length=100)
     gender = models.CharField(choices=GenderType.GENDER_CHOICES, max_length=1)
-    vaccine_centre = models.ForeignKey("VaccineCentre", null=True, blank=True, on_delete=models.CASCADE)
+    vaccine_centre = models.ForeignKey("centreapp.VaccineCentre", null=True, blank=True, on_delete=models.CASCADE)
     # validation : if user_type = patient  null= true vaccine_centre il n'existe pas else (user_type =staff)
     # vaccine_centre il existe  35:08
 

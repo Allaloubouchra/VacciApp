@@ -1,5 +1,21 @@
 from rest_framework import serializers
-from centreapp.models import *
+from centreapp.models import Wilaya, Disease, City, Survey, VaccineCentre, Doctor, WorkingHours, Vaccine, \
+    VaccineAndCentre
+
+
+class DoctorSerializer(serializers.ModelSerializer):
+    from patientapp.serializers import AccountSerializer
+    account = AccountSerializer(read_only=True)
+
+    class Meta:
+        fields = (
+            "id",
+            "speciality",
+            "position",
+            "post",
+            "account",
+        )
+        model = Doctor
 
 
 class WilayaSerializer(serializers.ModelSerializer):
@@ -23,12 +39,53 @@ class CitySerializer(serializers.ModelSerializer):
 
 
 class DiseaseSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Disease
         fields = ('id',
                   'name',
                   )
+
+
+class VaccineCentreSerializer(serializers.ModelSerializer):
+    city = CitySerializer(read_only=True)
+
+    class Meta:
+        fields = (
+            "id",
+            "name",
+            "address",
+            "num_phone",
+            "latitude",
+            "longitude",
+            "city",
+        )
+        model = VaccineCentre
+
+
+class VaccineSerializer(serializers.ModelSerializer):
+    vaccine_centres = VaccineCentreSerializer(read_only=True)
+
+    class Meta:
+        fields = (
+            "id",
+            "name",
+            "time_between_dose",
+            "vaccine_centres",
+        )
+        model = Vaccine
+
+
+class VaccineAndCentreSerializer(serializers.ModelSerializer):
+    centre = VaccineCentreSerializer(read_only=True)
+    vaccine = VaccineSerializer(read_only=True)
+
+    class Meta:
+        fields = (
+            "centre",
+            "vaccine",
+            "available",
+        )
+        model = VaccineAndCentre
 
 
 class SurveySerializer(serializers.ModelSerializer):
@@ -51,38 +108,7 @@ class SurveySerializer(serializers.ModelSerializer):
         model = Survey
 
 
-class VaccineCentreSerializer(serializers.ModelSerializer):
-    city = CitySerializer(read_only=True)
-
-    class Meta:
-        fields = (
-            "id",
-            "name",
-            "address",
-            "num_phone",
-            "latitude",
-            "longitude",
-            "city",
-        )
-        model = VaccineCentre
-
-
-class Doctor(serializers.ModelSerializer):
-    from patientapp.serializers import AccountSerializer
-    account = AccountSerializer(read_only=True)
-
-    class Meta:
-        fields = (
-            "id",
-            "speciality",
-            "position",
-            "post",
-            "account",
-        )
-        model = Doctor
-
-
-class WorkingHours(serializers.ModelSerializer):
+class WorkingHoursSerializer(serializers.ModelSerializer):
     centre = VaccineCentreSerializer(read_only=True)
 
     class Meta:
@@ -96,29 +122,3 @@ class WorkingHours(serializers.ModelSerializer):
             "to_hour_s",
         )
         model = WorkingHours
-
-
-class VaccineSerializer(serializers.ModelSerializer):
-    vaccine_centres = VaccineCentreSerializer(read_only=True)
-
-    class Meta:
-        fields = (
-            "id",
-            "name",
-            "time_between_dose",
-            "vaccine_centres",
-        )
-        model = Vaccine
-
-
-class VaccineAndCentre(serializers.ModelSerializer):
-    centre = VaccineCentreSerializer(read_only=True)
-    vaccine = VaccineSerializer(read_only=True)
-
-    class Meta:
-        fields = (
-            "centre",
-            "vaccine",
-            "available",
-        )
-        model = VaccineAndCentre
