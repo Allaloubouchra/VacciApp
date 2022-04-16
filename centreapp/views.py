@@ -6,7 +6,8 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
 from centreapp.models import Survey
-from centreapp.serializers import UserSerializer, SurveySerializer
+from patientapp.serializers import UserSerializer
+from centreapp.serializers import SurveySerializer
 
 
 class RegisterApi(generics.GenericAPIView):
