@@ -14,6 +14,8 @@ class Account(models.Model):
     address = models.CharField(max_length=100)
     gender = models.CharField(choices=GenderType.GENDER_CHOICES, max_length=1)
     vaccine_centre = models.ForeignKey("VaccineCentre", null=True, blank=True, on_delete=models.CASCADE)
+    # validation : if user_type = patient  null= true vaccine_centre il n'existe pas else (user_type =staff)
+    # vaccine_centre il existe  35:08
 
     @property
     def age(self):
@@ -27,7 +29,6 @@ class Account(models.Model):
 
     def is_receptionist(self):
         return self.user_type == UserType.RECEPTIONIST
-
 
     @classmethod
     def get_patients_ids(cls):

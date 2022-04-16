@@ -1,5 +1,4 @@
 from rest_framework import serializers
-from centreapp.serializers import VaccineSerializer, VaccineCentreSerializer
 from patientapp.models import *
 
 
@@ -7,7 +6,7 @@ class AccountSerializer(serializers.ModelSerializer):
     class Meta:
         fields = (
             'id',
-            'user',
+            'user',    # user id et pas l'objet
             'user_type',
             'get_user_type_display',
             'birthday',
@@ -39,6 +38,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class VaccinationAppointmentSerializer(serializers.ModelSerializer):
+    from centreapp.serializers import VaccineSerializer, VaccineCentreSerializer
     patient = AccountSerializer(read_only=True)
     doctor = AccountSerializer(read_only=True)
     receptionist = AccountSerializer(read_only=True)
@@ -50,8 +50,8 @@ class VaccinationAppointmentSerializer(serializers.ModelSerializer):
             'id',
             'appointment_date',
             'num_dose',
-            'arm',
-            'get_arm_display',
+            'arm',                 # l or r
+            'get_arm_display',     # left or right
             'patient',
             'patient_id',
             'doctor',
