@@ -1,5 +1,7 @@
 from django.db import models
+from centreapp import DayOfWeek
 from patientapp.models import Account, VaccinationAppointment
+from django.utils.translation import gettext_lazy as _
 
 
 class Wilaya(models.Model):
@@ -9,7 +11,7 @@ class Wilaya(models.Model):
 
 class City(models.Model):
     name = models.CharField(max_length=255)
-    matricule = models.PositiveIntegerField()
+    matriculate = models.PositiveIntegerField()
     wilaya = models.ForeignKey(Wilaya, on_delete=models.CASCADE, related_name="cities")
 
 
@@ -41,7 +43,18 @@ class VaccineCentre(models.Model):
     longitude = models.DecimalField(decimal_places=10, max_digits=20)
     city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='centres')
 
-    # TODO add more information about openning and closing, available or not, working hours...
+
+class WorkingHours(models.Model):
+    centre = models.ForeignKey(VaccineCentre, on_delete=models.CASCADE)
+    day_of_week = models.PositiveIntegerField(_("day of week"), choices=DayOfWeek.WEEKDAYS)
+    from_hour = models.TimeField(_("from hour"), auto_now=False, auto_now_add=False, blank=True, null=True)
+    to_hour = models.TimeField(_("to hour"), auto_now=False, auto_now_add=False, blank=True, null=True)
+    from_hour_s = models.TimeField(_("from hour"), auto_now=False, auto_now_add=False, blank=True, null=True)
+    to_hour_s = models.TimeField(_("to hour"), auto_now=False, auto_now_add=False, blank=True, null=True)
+
+    class Meta:
+        unique_together = ('centre', 'day_of_week',)
+# available
 
 
 class Doctor(models.Model):
@@ -57,8 +70,8 @@ class Doctor(models.Model):
 
 class Vaccine(models.Model):
     name = models.CharField(max_length=50)
-    time_between_dose = models.IntegerField()
-    vaccine_centre = models.ManyToManyField("VaccineCentre",through='VaccineAndCentre')
+    time_between_dose = models.PositiveIntegerField()
+    vaccine_centre = models.ManyToManyField("VaccineCentre", through='VaccineAndCentre')
 
 
 class VaccineAndCentre(models.Model):
