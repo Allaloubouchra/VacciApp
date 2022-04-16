@@ -20,6 +20,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('centreapp.urls')),
     path('', include('patientapp.urls')),
+<<<<<<< HEAD
 
+=======
+>>>>>>> f1b44fcd53338cbe2c2d30b5c02773505285d698
 ]
 
