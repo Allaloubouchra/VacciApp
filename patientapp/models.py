@@ -30,6 +30,9 @@ class Account(models.Model):
     def is_receptionist(self):
         return self.user_type == UserType.RECEPTIONIST
 
+    def is_doctor_or_is_receptionist(self):
+        return  self.is_receptionist() or self.is_doctor()
+
     @classmethod
     def get_patients_ids(cls):
         return Account.objects.filter(user_type=UserType.PATIENT).values_list('id', flat=True)

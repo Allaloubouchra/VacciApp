@@ -109,7 +109,8 @@ class SurveySerializer(serializers.ModelSerializer):
 
 
 class WorkingHoursSerializer(serializers.ModelSerializer):
-    centre = VaccineCentreSerializer(read_only=True)
+    # create method not confirmed
+    centre = VaccineCentreSerializer(required=False)
 
     class Meta:
         fields = (
@@ -117,8 +118,9 @@ class WorkingHoursSerializer(serializers.ModelSerializer):
             "centre",
             "day_of_week",
             "from_hour",
-            "to_hur",
+            "to_hour",
             "from_hour_s",
             "to_hour_s",
         )
         model = WorkingHours
+

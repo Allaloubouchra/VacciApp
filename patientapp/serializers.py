@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.utils import timezone
 from rest_framework import serializers
 from patientapp.models import Account, VaccinationAppointment
 
@@ -88,3 +89,21 @@ class VaccinationAppointmentSerializer(serializers.ModelSerializer):
                 "write_only": True,
             },
         }
+
+    def validate_appointment_date(self, data):
+        if data < timezone.now():
+            raise serializers.ValidationError("finish must occur after start")
+        return data
+
+    def validate(self, data):
+        from centreapp.models import WorkingHours
+
+        try:
+            working_hour = WorkingHours.objects.get(centre_id=data['centre'],
+                                                    day_of_week=data['appointment_date'].week_day())
+            if not ((working_hour.from_hour <= data['appointment_date'].time() <= working_hour.to_hour) or
+                    (working_hour.from_hour_s <= data['appointment_date'].time() <= working_hour.to_hour_s)):
+                raise serializers.ValidationError("We are not available.")
+        except Exception:
+            raise serializers.ValidationError("the centre you selected is not available on that day of week.")
+        return data

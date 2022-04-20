@@ -41,3 +41,4 @@ class SurveyViewSet(ModelViewSet):
     queryset = Survey.objects.all()
 
     # todo limit access for doctors and centre doctors
+
