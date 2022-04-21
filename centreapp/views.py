@@ -4,16 +4,14 @@ from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
-
 from centreapp.models import Survey
-
 from centreapp.serializers import SurveySerializer
 
 
 class RegisterApi(generics.GenericAPIView):
     def post(self, request):
-        from patientapp.serializers import UserSerializer
-        serializer = UserSerializer(data=request.data)
+        from patientapp.serializers import AccountSerializer
+        serializer = AccountSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -29,7 +27,6 @@ class LogInApi(ObtainAuthToken):
         data = {'token': token.key}
         data.update(model_to_dict(user, exclude=["password", "user_permissions", "is_staff", "is_active"]))
         try:
-
             data.update(model_to_dict(user.account, fields="__all__"))
         except Exception:
             pass

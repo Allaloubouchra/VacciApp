@@ -1,4 +1,5 @@
 from rest_framework import serializers
+
 from centreapp.models import Wilaya, Disease, City, Survey, VaccineCentre, Doctor, WorkingHours, Vaccine, \
     VaccineAndCentre
 
@@ -89,6 +90,7 @@ class VaccineAndCentreSerializer(serializers.ModelSerializer):
 
 
 class SurveySerializer(serializers.ModelSerializer):
+
     from patientapp.serializers import VaccinationAppointmentSerializer
     vaccination_appointment = VaccinationAppointmentSerializer(read_only=True)
 
@@ -123,4 +125,5 @@ class WorkingHoursSerializer(serializers.ModelSerializer):
             "to_hour_s",
         )
         model = WorkingHours
+
 

@@ -7,7 +7,7 @@ from patientapp.models import Account, VaccinationAppointment
 class AccountSerializer(serializers.ModelSerializer):
     class Meta:
         fields = (
-            'id',
+            # 'id',
             'user',  # user id et pas l'objet
             'user_type',
             'get_user_type_display',
@@ -107,3 +107,5 @@ class VaccinationAppointmentSerializer(serializers.ModelSerializer):
         except Exception:
             raise serializers.ValidationError("the centre you selected is not available on that day of week.")
         return data
+
+
