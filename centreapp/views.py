@@ -2,16 +2,26 @@ from django.forms import model_to_dict
 from rest_framework import generics, status
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
+
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from centreapp.models import Survey
 from centreapp.serializers import SurveySerializer
 
 
+class UserCreateAPIView(generics.CreateAPIView):
+    from patientapp.serializers import UserSerializer
+    from rest_framework.permissions import AllowAny
+    from django.contrib.auth.models import User
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = (AllowAny,)
+
+
 class RegisterApi(generics.GenericAPIView):
     def post(self, request):
-        from patientapp.serializers import AccountSerializer
-        serializer = AccountSerializer(data=request.data)
+        from patientapp.serializers import UserSerializer
+        serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)

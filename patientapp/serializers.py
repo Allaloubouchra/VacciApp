@@ -1,10 +1,12 @@
 from django.contrib.auth.models import User
+
 from django.utils import timezone
 from rest_framework import serializers
 from patientapp.models import Account, VaccinationAppointment
 
 
 class AccountSerializer(serializers.ModelSerializer):
+
     class Meta:
         fields = (
             # 'id',
@@ -18,11 +20,14 @@ class AccountSerializer(serializers.ModelSerializer):
             'gender',
             'vaccine_centre'
         )
+        extra_kwargs = {'user': {'required': False}}
+
         model = Account
 
 
 class UserSerializer(serializers.ModelSerializer):
     account = AccountSerializer(required=False)
+    password = serializers.CharField(write_only=True)
 
     class Meta:
         model = User
@@ -36,7 +41,21 @@ class UserSerializer(serializers.ModelSerializer):
             'is_staff',
             'is_superuser',
             'account',
+            'password',
         )
+
+    def create(self, validated_data):
+
+        account_data = validated_data.pop('account', None)
+        user = super(UserSerializer, self).create(validated_data)
+        user.set_password(validated_data['password'])
+        user.save()
+        if account_data is not None:
+            account_data['user'] = user.id
+            account_serializer = AccountSerializer(data=account_data)
+            if account_serializer.is_valid(raise_exception=True):
+                account_serializer.save()
+        return user
 
 
 class VaccinationAppointmentSerializer(serializers.ModelSerializer):
@@ -107,5 +126,3 @@ class VaccinationAppointmentSerializer(serializers.ModelSerializer):
         except Exception:
             raise serializers.ValidationError("the centre you selected is not available on that day of week.")
         return data
-
-
