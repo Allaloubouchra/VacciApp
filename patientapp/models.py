@@ -20,16 +20,16 @@ class Account(models.Model):
     @property
     def age(self):
         return timezone.now().year - self.birthday.year
-
+    @property
     def is_patient(self):
         return self.user_type == UserType.PATIENT
-
+    @property
     def is_doctor(self):
         return self.user_type == UserType.DOCTOR
-
+    @property
     def is_receptionist(self):
         return self.user_type == UserType.RECEPTIONIST
-
+    @property
     def is_doctor_or_is_receptionist(self):
         return  self.is_receptionist() or self.is_doctor()
 
