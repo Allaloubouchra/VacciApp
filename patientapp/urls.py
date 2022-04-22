@@ -1,8 +1,12 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import SimpleRouter
 
+from patientapp.views import VaccinationAppointmentViewSet, AccountViewSet
 
-
+router = SimpleRouter()
+router.register('vaccination-appointment', VaccinationAppointmentViewSet, )
+router.register('account', AccountViewSet, )
 urlpatterns = [
-    #path('registersoumia/', RegisterApi.as_view()),
-   # path('register/', RegisterApi.as_view()),
+    path('view-set/', include(router.urls)),
+
 ]
