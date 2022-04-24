@@ -14,24 +14,29 @@ class Account(models.Model):
     address = models.CharField(max_length=100)
     gender = models.CharField(choices=GenderType.GENDER_CHOICES, max_length=1)
     vaccine_centre = models.ForeignKey("centreapp.VaccineCentre", null=True, blank=True, on_delete=models.CASCADE)
+
     # validation : if user_type = patient  null= true vaccine_centre il n'existe pas else (user_type =staff)
     # vaccine_centre il existe  35:08
 
     @property
     def age(self):
         return timezone.now().year - self.birthday.year
+
     @property
     def is_patient(self):
         return self.user_type == UserType.PATIENT
+
     @property
     def is_doctor(self):
         return self.user_type == UserType.DOCTOR
+
     @property
     def is_receptionist(self):
         return self.user_type == UserType.RECEPTIONIST
+
     @property
     def is_doctor_or_is_receptionist(self):
-        return  self.is_receptionist() or self.is_doctor()
+        return self.is_receptionist or self.is_doctor
 
     @classmethod
     def get_patients_ids(cls):
