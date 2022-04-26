@@ -6,6 +6,7 @@ from patientapp.models import Account, VaccinationAppointment
 
 
 class AccountSerializer(serializers.ModelSerializer):
+    age = serializers.IntegerField()
 
     class Meta:
         fields = (

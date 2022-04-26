@@ -17,7 +17,6 @@ class Account(models.Model):
 
     # validation : if user_type = patient  null= true vaccine_centre il n'existe pas else (user_type =staff)
     # vaccine_centre il existe  35:08
-
     @property
     def age(self):
         return timezone.now().year - self.birthday.year
