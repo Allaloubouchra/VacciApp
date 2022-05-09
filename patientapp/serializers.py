@@ -1,13 +1,15 @@
+from datetime import datetime
+
 from django.contrib.auth.models import User
 
 from django.utils import timezone
 from rest_framework import serializers
+from rest_framework.fields import IntegerField
+
 from patientapp.models import Account, VaccinationAppointment
 
 
 class AccountSerializer(serializers.ModelSerializer):
-    age = serializers.IntegerField()
-
     class Meta:
         fields = (
             # 'id',
@@ -17,7 +19,7 @@ class AccountSerializer(serializers.ModelSerializer):
             'birthday',
             'phone_num',
             'address',
-            'age',
+            "age",
             'gender',
             'vaccine_centre'
         )
@@ -64,6 +66,12 @@ class VaccinationAppointmentSerializer(serializers.ModelSerializer):
     doctor = AccountSerializer(read_only=True)
     receptionist = AccountSerializer(read_only=True)
 
+    receptionist_id = IntegerField(write_only=True)
+    patient_id = IntegerField(write_only=True)
+    doctor_id = IntegerField(write_only=True)
+    vaccine_id = IntegerField(write_only=True)
+    centre_id = IntegerField(write_only=True)
+
     def get_fields(self):
         from centreapp.serializers import VaccineSerializer, VaccineCentreSerializer
         fields = super(VaccinationAppointmentSerializer, self).get_fields()
@@ -92,38 +100,24 @@ class VaccinationAppointmentSerializer(serializers.ModelSerializer):
             'centre_id',
         )
         model = VaccinationAppointment
-        extra_kwargs = {
-            "patient_id": {
-                "write_only": True,
-            },
-            "doctor_id": {
-                "write_only": True,
-            },
-            "receptionist_id": {
-                "write_only": True,
-            },
-            "vaccine_id": {
-                "write_only": True,
-            },
-            "centre_id": {
-                "write_only": True,
-            },
-        }
+
 
     def validate_appointment_date(self, data):
         if data < timezone.now():
             raise serializers.ValidationError("finish must occur after start")
         return data
 
+    """
     def validate(self, data):
         from centreapp.models import WorkingHours
-
         try:
             working_hour = WorkingHours.objects.get(centre_id=data['centre'],
-                                                    day_of_week=data['appointment_date'].week_day())
+                                                    day_of_week=data['appointment_date'].weekday())
             if not ((working_hour.from_hour <= data['appointment_date'].time() <= working_hour.to_hour) or
                     (working_hour.from_hour_s <= data['appointment_date'].time() <= working_hour.to_hour_s)):
                 raise serializers.ValidationError("We are not available.")
-        except Exception:
+        except Exception as e:
             raise serializers.ValidationError("the centre you selected is not available on that day of week.")
+
         return data
+"""

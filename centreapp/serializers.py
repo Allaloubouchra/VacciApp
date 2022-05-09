@@ -6,7 +6,7 @@ from centreapp.models import Wilaya, Disease, City, Survey, VaccineCentre, Docto
 
 class DoctorSerializer(serializers.ModelSerializer):
     from patientapp.serializers import AccountSerializer
-    account = AccountSerializer(read_only=True)
+    account = AccountSerializer(read_only=False)
 
     class Meta:
         fields = (
@@ -24,7 +24,7 @@ class WilayaSerializer(serializers.ModelSerializer):
         model = Wilaya
         fields = ('id',
                   'name',
-                  'matriculate'
+                  'matricule'
                   )
 
 

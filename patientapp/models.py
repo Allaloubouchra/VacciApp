@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
@@ -67,3 +69,4 @@ class VaccinationAppointment(models.Model):
 
     def date_for_next_appointment(self):
         pass
+
