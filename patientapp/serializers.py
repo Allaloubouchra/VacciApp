@@ -4,12 +4,14 @@ from django.contrib.auth.models import User
 
 from django.utils import timezone
 from rest_framework import serializers
-from rest_framework.fields import IntegerField
+from rest_framework.fields import IntegerField, ReadOnlyField
 
 from patientapp.models import Account, VaccinationAppointment
 
 
 class AccountSerializer(serializers.ModelSerializer):
+    full_name = ReadOnlyField(source="user.get_full_name")
+
     class Meta:
         fields = (
             # 'id',
@@ -21,7 +23,9 @@ class AccountSerializer(serializers.ModelSerializer):
             'address',
             "age",
             'gender',
-            'vaccine_centre'
+            'get_gender_display',
+            'vaccine_centre',
+            'full_name',
         )
         extra_kwargs = {'user': {'required': False}}
 
@@ -100,7 +104,6 @@ class VaccinationAppointmentSerializer(serializers.ModelSerializer):
             'centre_id',
         )
         model = VaccinationAppointment
-
 
     def validate_appointment_date(self, data):
         if data < timezone.now():

@@ -8,7 +8,6 @@ router.register('vaccination-appointment', VaccinationAppointmentViewSet, )
 
 router.register('account', AccountViewSet, )
 
-
 urlpatterns = [
     path('', include(router.urls)),
 

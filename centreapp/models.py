@@ -8,15 +8,24 @@ class Wilaya(models.Model):
     name = models.CharField(max_length=255, unique=True)
     matricule = models.PositiveIntegerField()
 
+    def __str__(self):
+        return self.name
+
 
 class City(models.Model):
     name = models.CharField(max_length=255)
     matriculate = models.PositiveIntegerField()
     wilaya = models.ForeignKey(Wilaya, on_delete=models.CASCADE, related_name="cities")
 
+    def __str__(self):
+        return self.name
+
 
 class Disease(models.Model):
     name = models.CharField(max_length=255, unique=True)
+
+    def __str__(self):
+        return self.name
 
 
 class Survey(models.Model):
@@ -34,6 +43,9 @@ class Survey(models.Model):
     blood_pressure = models.DecimalField(decimal_places=2, max_digits=5)
     oximetry = models.DecimalField(decimal_places=2, max_digits=5)
 
+    def __str__(self):
+        return self.id
+
 
 class VaccineCentre(models.Model):
     name = models.CharField(max_length=50)
@@ -43,17 +55,25 @@ class VaccineCentre(models.Model):
     longitude = models.DecimalField(decimal_places=10, max_digits=20)
     city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='centres')
 
+    def __str__(self):
+        return self.name
+
 
 class WorkingHours(models.Model):
-    centre = models.ForeignKey(VaccineCentre, on_delete=models.CASCADE)
+    centre = models.ForeignKey(VaccineCentre, on_delete=models.CASCADE, related_name="working_hours")
     day_of_week = models.PositiveIntegerField(_("day of week"), choices=DayOfWeek.WEEKDAYS)
     from_hour = models.TimeField(_("from hour"), auto_now=False, auto_now_add=False, blank=True, null=True)
     to_hour = models.TimeField(_("to hour"), auto_now=False, auto_now_add=False, blank=True, null=True)
     from_hour_s = models.TimeField(_("from hour"), auto_now=False, auto_now_add=False, blank=True, null=True)
     to_hour_s = models.TimeField(_("to hour"), auto_now=False, auto_now_add=False, blank=True, null=True)
 
+    def __str__(self):
+        return self.centre.name + " " + self.get_day_of_week_display()
+
     class Meta:
         unique_together = ('centre', 'day_of_week',)
+
+
 # available
 
 
@@ -67,14 +87,23 @@ class Doctor(models.Model):
     position = models.CharField(max_length=50)
     post = models.CharField(max_length=50)
 
+    def __str__(self):
+        return self.account.user.get_full_name()
+
 
 class Vaccine(models.Model):
     name = models.CharField(max_length=50)
     time_between_dose = models.PositiveIntegerField()
     vaccine_centre = models.ManyToManyField("VaccineCentre", through='VaccineAndCentre')
 
+    def __str__(self):
+        return self.name
+
 
 class VaccineAndCentre(models.Model):
     centre = models.ForeignKey(VaccineCentre, on_delete=models.CASCADE, related_name='vaccines')
     vaccine = models.ForeignKey(Vaccine, on_delete=models.CASCADE, related_name='centres')
     available = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.vaccine.name + " " + self.centre.name

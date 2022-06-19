@@ -2,12 +2,13 @@ from django.forms import model_to_dict
 from rest_framework import generics, status
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.generics import ListAPIView
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, AllowAny
 
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
-from centreapp.models import Survey, VaccineCentre, Vaccine
-from centreapp.serializers import SurveySerializer, VaccineCentreSerializer, VaccineSerializer
+from centreapp.models import Survey, VaccineCentre, Vaccine, Wilaya
+from centreapp.serializers import SurveySerializer, VaccineCentreSerializer, VaccineSerializer, WilayaSerializer
 
 
 class UserCreateAPIView(generics.CreateAPIView):
@@ -50,20 +51,20 @@ class SurveyViewSet(ModelViewSet):
     queryset = Survey.objects.all()
     # todo limit access for doctors and centre doctors
 
+
 class CenterViewSet(ModelViewSet):
     serializer_class = VaccineCentreSerializer
     queryset = VaccineCentre.objects.all()
     permission_classes = [IsAuthenticated]
-    def get_queryset(self):
-        queryset = super(CenterViewSet, self).get_queryset()
-        return queryset
 
 
-
-class VaccinViewSet(ModelViewSet):
+class VaccineViewSet(ModelViewSet):
     serializer_class = VaccineSerializer
     queryset = Vaccine.objects.all()
-    permission_classes = [IsAuthenticated]
-    def get_queryset(self):
-        queryset = super(VaccinViewSet, self).get_queryset()
-        return queryset
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+
+class ListWilayaApi(ListAPIView):
+    serializer_class = WilayaSerializer
+    queryset = Wilaya.objects.all()
+    permission_classes = [AllowAny]

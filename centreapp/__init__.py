@@ -15,3 +15,10 @@ class DayOfWeek:
         (THURSDAY, 'Thursday'),
         (FRIDAY, 'Friday'),
     )
+
+
+class Temperature:
+
+    CHOICES = (
+        ()
+    )

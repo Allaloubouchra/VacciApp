@@ -20,7 +20,7 @@ class VaccinationAppointmentViewSet(ModelViewSet):
         if self.request.user.account.is_patient:
             queryset = queryset.filter(patient__user=self.request.user)
         if self.request.user.account.is_doctor_or_is_receptionist:
-            queryset = queryset.filter(centre=self.request.user.centre)
+            queryset = queryset.filter(centre=self.request.user.account.vaccine_centre)
         if self.action == 'appointment_calendar':
             queryset = queryset.filter(appointment_date__date=timezone.now()) \
                 .order_by('appointment_date__hour', 'appointment_date__minute')
@@ -41,8 +41,6 @@ class VaccinationAppointmentViewSet(ModelViewSet):
 
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
-
-
 
 
 class AccountViewSet(ModelViewSet):
