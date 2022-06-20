@@ -110,12 +110,9 @@ class VaccineCentreSerializer(serializers.ModelSerializer):
 
 
 class SurveySerializer(serializers.ModelSerializer):
-    from patientapp.serializers import VaccinationAppointmentSerializer
-    vaccination_appointment = VaccinationAppointmentSerializer(read_only=True)
-
     class Meta:
         fields = (
-            "id",
+            'pk',
             "positive_covid",
             "contamination",
             "disease",
@@ -127,3 +124,9 @@ class SurveySerializer(serializers.ModelSerializer):
             'vaccination_appointment',
         )
         model = Survey
+
+        extra_kwargs = {
+            'pk': {
+                'read_only': True,
+            }
+        }

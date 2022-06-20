@@ -4,10 +4,12 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
-from patientapp.models import Account
 
-from patientapp.serializers import VaccinationAppointmentSerializer, AccountSerializer
+from centreapp.serializers import SurveySerializer
+from patientapp import AppointmentStatus
+from patientapp.models import Account
 from patientapp.models import VaccinationAppointment
+from patientapp.serializers import VaccinationAppointmentSerializer, AccountSerializer
 
 
 class VaccinationAppointmentViewSet(ModelViewSet):
@@ -41,6 +43,31 @@ class VaccinationAppointmentViewSet(ModelViewSet):
 
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+
+    @action(["POST"], detail=True, url_path='validate')
+    def validate_appointment(self, request, *args, **kwargs):
+        appointment: VaccinationAppointment = self.get_object()
+        if appointment.status == AppointmentStatus.CONFIRMED:
+            appointment.doctor = request.user.account
+            appointment.status = AppointmentStatus.DONE
+            survey_serializer = SurveySerializer(data=request.data)
+            if survey_serializer.is_valid(raise_exception=True):
+                survey_serializer.save()
+            appointment.save()
+            return Response({"status": "Success"})
+        return Response({"status": "Success"})
+
+    @action(["POST"], detail=True, url_path='cancel')
+    def cancel_appointment(self, request, *args, **kwargs):
+        appointment: VaccinationAppointment = self.get_object()
+        if appointment.status == AppointmentStatus.CONFIRMED:
+            appointment.doctor = request.user.account
+            appointment.status = AppointmentStatus.CANCELED
+            survey_serializer = SurveySerializer(data=request.data)
+            if survey_serializer.is_valid(raise_exception=True):
+                survey_serializer.save()
+            appointment.save()
+            return Response()
 
 
 class AccountViewSet(ModelViewSet):

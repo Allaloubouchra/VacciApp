@@ -18,7 +18,55 @@ class DayOfWeek:
 
 
 class Temperature:
+    FEBRILE = "F"
+    APYRETIQUE = "A"
+    CHOICES = (
+        (FEBRILE, "Fébrile"),
+        (APYRETIQUE, "Apyrétique"),
+    )
+
+
+class FreqCardiaque:
+    TACHYCARDIE = "T"
+    NORMAL = "N"
+    BRADYCARDIE = "B"
 
     CHOICES = (
-        ()
+        (TACHYCARDIE, "Tachycardie"),
+        (NORMAL, "Normal"),
+        (BRADYCARDIE, "Bradycardie"),
+    )
+
+
+class FreqRespi:
+    EUPNEIQUE = "E"
+    DYSPNEE = "D"
+    BRADYPNEE = "B"
+
+    CHOICES = (
+        (EUPNEIQUE, "Eupneique"),
+        (DYSPNEE, "Dyspnée"),
+        (BRADYPNEE, "Bradypnée"),
+    )
+
+
+class Tension:
+    HYPERTENSION = "H"
+    NORMAL = "N"
+    HYPOTENSION = "O"
+
+    CHOICES = (
+        (HYPERTENSION, "Hypertension"),
+        (NORMAL, "Normal"),
+        (HYPOTENSION, "Hypotension"),
+    )
+
+
+class Saturation:
+    GOOD = "G"
+    BAD = "B"
+
+    CHOICES = (
+        (GOOD, "Bonne saturation"),
+        (BAD, "Désaturation"),
     )

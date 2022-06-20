@@ -1,5 +1,5 @@
 from django.db import models
-from centreapp import DayOfWeek
+from centreapp import DayOfWeek, Temperature, FreqCardiaque, FreqRespi, Tension, Saturation
 from patientapp.models import Account, VaccinationAppointment
 from django.utils.translation import gettext_lazy as _
 
@@ -37,14 +37,14 @@ class Survey(models.Model):
     positive_covid = models.BooleanField(default=False)
     contamination = models.BooleanField(default=False)
     disease = models.ManyToManyField(Disease, blank=True)
-    temperature = models.DecimalField(decimal_places=2, max_digits=5)
-    heart_rate = models.PositiveIntegerField()
-    respiratory_rate = models.PositiveIntegerField()
-    blood_pressure = models.DecimalField(decimal_places=2, max_digits=5)
-    oximetry = models.DecimalField(decimal_places=2, max_digits=5)
+    temperature = models.CharField(max_length=2, choices=Temperature.CHOICES, null=True, blank=True)
+    heart_rate = models.CharField(max_length=2, choices=FreqCardiaque.CHOICES, null=True, blank=True)
+    respiratory_rate = models.CharField(max_length=2, choices=FreqRespi.CHOICES, null=True, blank=True)
+    blood_pressure = models.CharField(max_length=2, choices=Tension.CHOICES, null=True, blank=True)
+    oximetry = models.CharField(max_length=2, choices=Saturation.CHOICES, null=True, blank=True)
 
     def __str__(self):
-        return self.id
+        return f'{self.pk}'
 
 
 class VaccineCentre(models.Model):
