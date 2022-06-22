@@ -6,6 +6,7 @@ from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, AllowAny
 
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 from centreapp.models import Survey, VaccineCentre, Vaccine, Wilaya
 from centreapp.serializers import SurveySerializer, VaccineCentreSerializer, VaccineSerializer, WilayaSerializer
@@ -39,6 +40,20 @@ class LogInApi(ObtainAuthToken):
         data = {'token': token.key,
                 'user_type': user.account.user_type}
         data.update(model_to_dict(user, exclude=["password", "user_permissions", "is_staff", "is_active"]))
+        try:
+            data.update(model_to_dict(user.account, fields="__all__"))
+        except Exception:
+            pass
+        return Response(data)
+
+
+class GetUserApi(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        data = model_to_dict(user, exclude=["password", "user_permissions", "is_staff", "is_active"])
+
         try:
             data.update(model_to_dict(user.account, fields="__all__"))
         except Exception:

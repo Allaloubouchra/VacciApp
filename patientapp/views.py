@@ -32,6 +32,13 @@ class VaccinationAppointmentViewSet(ModelViewSet):
     # if self.request.user.account.is_receptionist:
     # queryset = queryset.filter(appointment_date = date.today()).order_by('datetime__hour', 'datetime__minute')
 
+    def get_serializer(self, *args, **kwargs):
+        data = kwargs.pop('data', None)
+        if data is not None:
+            data['patient_id'] = self.request.user.account.pk
+            return super(VaccinationAppointmentViewSet, self).get_serializer(data=data, *args, **kwargs)
+        return super(VaccinationAppointmentViewSet, self).get_serializer(*args, **kwargs)
+
     @action(["GET"], detail=False, url_path="appointment-calendar", )
     def appointment_calendar(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())

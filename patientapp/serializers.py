@@ -70,9 +70,9 @@ class VaccinationAppointmentSerializer(serializers.ModelSerializer):
     doctor = AccountSerializer(read_only=True)
     receptionist = AccountSerializer(read_only=True)
 
-    receptionist_id = IntegerField(write_only=True)
+    receptionist_id = IntegerField(write_only=True, required=False)
     patient_id = IntegerField(write_only=True)
-    doctor_id = IntegerField(write_only=True)
+    doctor_id = IntegerField(write_only=True, required=False)
     vaccine_id = IntegerField(write_only=True)
     centre_id = IntegerField(write_only=True)
 

@@ -1,7 +1,8 @@
 from django.urls import path, include
 from rest_framework.routers import SimpleRouter
 
-from centreapp.views import LogInApi, SurveyViewSet, RegisterApi, CenterViewSet, VaccineViewSet, ListWilayaApi
+from centreapp.views import LogInApi, SurveyViewSet, RegisterApi, CenterViewSet, VaccineViewSet, ListWilayaApi, \
+    GetUserApi
 
 router = SimpleRouter()
 
@@ -12,6 +13,7 @@ router.register('vaccine', VaccineViewSet, )
 urlpatterns = [
     path('login/', LogInApi.as_view()),
     path('register/', RegisterApi.as_view(), ),
+    path('get-user/', GetUserApi.as_view(), ),
     path('wilayas/', ListWilayaApi.as_view(), ),
     path('', include(router.urls)),
 
