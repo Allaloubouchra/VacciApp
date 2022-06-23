@@ -24,8 +24,10 @@ class VaccinationAppointmentViewSet(ModelViewSet):
         if self.request.user.account.is_doctor_or_is_receptionist:
             queryset = queryset.filter(centre=self.request.user.account.vaccine_centre)
         if self.action == 'appointment_calendar':
-            queryset = queryset.filter(appointment_date__date=timezone.now()) \
+            queryset = queryset.filter(appointment_date__date=timezone.now(), status=AppointmentStatus.CONFIRMED) \
                 .order_by('appointment_date__hour', 'appointment_date__minute')
+        if self.action == 'pending_appointments':
+            queryset = queryset.filter(appointment_date__date=timezone.now(), status=AppointmentStatus.PENDING)
 
         return queryset
 
@@ -41,15 +43,11 @@ class VaccinationAppointmentViewSet(ModelViewSet):
 
     @action(["GET"], detail=False, url_path="appointment-calendar", )
     def appointment_calendar(self, request, *args, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset())
+        return self.list(request, *args, **kwargs)
 
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
+    @action(["GET"], detail=False, url_path="pending-appointments", )
+    def pending_appointments(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
 
     @action(["POST"], detail=True, url_path='validate')
     def validate_appointment(self, request, *args, **kwargs):

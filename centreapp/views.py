@@ -55,7 +55,7 @@ class GetUserApi(APIView):
         data = model_to_dict(user, exclude=["password", "user_permissions", "is_staff", "is_active"])
 
         try:
-            data.update(model_to_dict(user.account, fields="__all__"))
+            data.update(model_to_dict(user.account, exclude=["pk"]))
         except Exception:
             pass
         return Response(data)
