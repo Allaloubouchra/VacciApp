@@ -27,7 +27,7 @@ class VaccinationAppointmentViewSet(ModelViewSet):
             queryset = queryset.filter(appointment_date__date=timezone.now(), status=AppointmentStatus.CONFIRMED) \
                 .order_by('appointment_date__hour', 'appointment_date__minute')
         if self.action == 'pending_appointments':
-            queryset = queryset.filter(appointment_date__date=timezone.now(), status=AppointmentStatus.PENDING)
+            queryset = queryset.filter(status=AppointmentStatus.PENDING)
 
         return queryset
 
