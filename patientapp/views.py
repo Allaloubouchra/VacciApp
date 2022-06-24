@@ -1,7 +1,7 @@
 from django.db.models import Q
 from django.utils import timezone
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
@@ -28,6 +28,11 @@ class VaccinationAppointmentViewSet(ModelViewSet):
                 .order_by('appointment_date__hour', 'appointment_date__minute')
         if self.action == 'pending_appointments':
             queryset = queryset.filter(status=AppointmentStatus.PENDING)
+        if self.action == 'get_proofs':
+            patient_id = self.request.data.get('id')
+            patient = Account.objects.filter(pk=patient_id)
+            if patient.exists():
+                queryset = queryset.objects.filter(patient=patient)
 
         return queryset
 
@@ -73,6 +78,10 @@ class VaccinationAppointmentViewSet(ModelViewSet):
                 survey_serializer.save()
             appointment.save()
             return Response()
+
+    @action(["GET"], detail=False, url_path="proofs", permission_classes=[AllowAny])
+    def get_proofs(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
 
 
 class AccountViewSet(ModelViewSet):
