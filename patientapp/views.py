@@ -1,4 +1,4 @@
-from django.db.models import Q
+from django.db.models import Q, Count, F, Value
 from django.utils import timezone
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -28,11 +28,6 @@ class VaccinationAppointmentViewSet(ModelViewSet):
                 .order_by('appointment_date__hour', 'appointment_date__minute')
         if self.action == 'pending_appointments':
             queryset = queryset.filter(status=AppointmentStatus.PENDING)
-        if self.action == 'get_proofs':
-            patient_id = self.request.data.get('id')
-            patient = Account.objects.filter(pk=patient_id)
-            if patient.exists():
-                queryset = queryset.objects.filter(patient=patient)
 
         return queryset
 
@@ -81,7 +76,22 @@ class VaccinationAppointmentViewSet(ModelViewSet):
 
     @action(["GET"], detail=False, url_path="proofs", permission_classes=[AllowAny])
     def get_proofs(self, request, *args, **kwargs):
-        return self.list(request, *args, **kwargs)
+        patient_id = self.request.data.get('id')
+        patient = Account.objects.filter(pk=patient_id)
+        if patient.exists():
+            vaccines = list(
+                VaccinationAppointment.objects
+                .filter(patient=patient, status=AppointmentStatus.CONFIRMED)
+                .values('vaccine__name')
+                .annotate(doses=Count('id'))
+                .order_by('vaccine__name')
+                .values('vaccine__name', 'vaccine__required_doses', 'doses',
+                        valid=Value(F('required_doses') == F('doses')))
+            )
+            patient_data = AccountSerializer(instance=patient).data
+            patient_data['vaccines'] = vaccines
+            return Response(vaccines)
+        return Response(status=404)
 
 
 class AccountViewSet(ModelViewSet):

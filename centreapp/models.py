@@ -95,6 +95,7 @@ class Vaccine(models.Model):
     name = models.CharField(max_length=50)
     time_between_dose = models.PositiveIntegerField()
     vaccine_centre = models.ManyToManyField("VaccineCentre", through='VaccineAndCentre')
+    required_doses = models.PositiveIntegerField(default=2)
 
     def __str__(self):
         return self.name
