@@ -31,13 +31,11 @@ class VaccinationAppointmentViewSet(ModelViewSet):
 
         return queryset
 
-    # if self.request.user.account.is_receptionist:
-    # queryset = queryset.filter(appointment_date = date.today()).order_by('datetime__hour', 'datetime__minute')
-
     def get_serializer(self, *args, **kwargs):
-        data = kwargs.pop('data', None)
-        if data is not None:
+        data = kwargs.get('data', None)
+        if data is not None and self.action == "create":
             data['patient_id'] = self.request.user.account.pk
+            kwargs.pop('data')
             return super(VaccinationAppointmentViewSet, self).get_serializer(data=data, *args, **kwargs)
         return super(VaccinationAppointmentViewSet, self).get_serializer(*args, **kwargs)
 
@@ -81,7 +79,7 @@ class VaccinationAppointmentViewSet(ModelViewSet):
         if patient.exists():
             vaccines = list(
                 VaccinationAppointment.objects
-                .filter(patient=patient, status=AppointmentStatus.CONFIRMED)
+                .filter(patient=patient, status=AppointmentStatus.DONE)
                 .values('vaccine__name')
                 .annotate(doses=Count('id'))
                 .order_by('vaccine__name')
