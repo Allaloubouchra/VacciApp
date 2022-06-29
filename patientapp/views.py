@@ -79,11 +79,7 @@ class VaccinationAppointmentViewSet(ModelViewSet):
         if patient.exists():
             vaccines = list(
                 VaccinationAppointment.objects
-<<<<<<< HEAD
-                .filter(patient=patient.first(), status=AppointmentStatus.CONFIRMED)
-=======
-                .filter(patient=patient, status=AppointmentStatus.DONE)
->>>>>>> ee557ac1aace40b2f90f09a99c952aec2ec0f66f
+                .filter(patient=patient.first(), status=AppointmentStatus.DONE)
                 .values('vaccine__name')
                 .annotate(doses=Count('id'))
                 .order_by('vaccine__name')
