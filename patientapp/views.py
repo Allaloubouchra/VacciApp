@@ -81,16 +81,16 @@ class VaccinationAppointmentViewSet(ModelViewSet):
         if patient.exists():
             vaccines = list(
                 VaccinationAppointment.objects
-                .filter(patient=patient, status=AppointmentStatus.CONFIRMED)
+                .filter(patient=patient.first(), status=AppointmentStatus.CONFIRMED)
                 .values('vaccine__name')
                 .annotate(doses=Count('id'))
                 .order_by('vaccine__name')
                 .values('vaccine__name', 'vaccine__required_doses', 'doses',
                         valid=Value(F('required_doses') == F('doses')))
             )
-            patient_data = AccountSerializer(instance=patient).data
+            patient_data = AccountSerializer(instance=patient.first()).data
             patient_data['vaccines'] = vaccines
-            return Response(vaccines)
+            return Response(patient_data)
         return Response(status=404)
 
 

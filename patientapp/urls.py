@@ -5,7 +5,7 @@ from patientapp.views import VaccinationAppointmentViewSet, AccountViewSet
 
 router = SimpleRouter()
 router.register('vaccination-appointment', VaccinationAppointmentViewSet, )
-
+router.register('vaccination-appointment/:id/', VaccinationAppointmentViewSet, )
 router.register('account', AccountViewSet, )
 
 urlpatterns = [
