@@ -77,13 +77,9 @@ class VaccinationAppointmentViewSet(ModelViewSet):
         patient_id = self.request.data.get('id')
         patient = Account.objects.filter(pk=patient_id)
         if patient.exists():
-            vaccines = list(
-                VaccinationAppointment.objects
-<<<<<<< HEAD
-                .filter(patient=patient.first(), status=AppointmentStatus.CONFIRMED)
-=======
+            vaccines = list(VaccinationAppointment.objects .filter(patient=patient.first(), status=AppointmentStatus.CONFIRMED)
+
                 .filter(patient=patient, status=AppointmentStatus.DONE)
->>>>>>> ee557ac1aace40b2f90f09a99c952aec2ec0f66f
                 .values('vaccine__name')
                 .annotate(doses=Count('id'))
                 .order_by('vaccine__name')
