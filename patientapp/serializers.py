@@ -26,6 +26,8 @@ class AccountSerializer(serializers.ModelSerializer):
             'get_gender_display',
             'vaccine_centre',
             'full_name',
+            'carte_nationale',
+            'passport',
         )
         extra_kwargs = {'user': {'required': False}}
 
