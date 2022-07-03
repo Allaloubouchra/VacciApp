@@ -75,7 +75,7 @@ class VaccinationAppointmentViewSet(ModelViewSet):
     @action(["POST"], detail=False, url_path="proofs", permission_classes=[AllowAny])
     def get_proofs(self, request, *args, **kwargs):
         patient_id = self.request.data.get('id')
-        patient = Account.objects.filter(pk=patient_id)
+        patient = Account.objects.filter(user_id=patient_id)
         if patient.exists():
             vaccines = list(
                 VaccinationAppointment.objects
