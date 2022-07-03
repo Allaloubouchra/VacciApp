@@ -1,4 +1,4 @@
-from django.db.models import Q, Count, F, Value
+from django.db.models import Q, Count, F, Value, When, Case
 from django.utils import timezone
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -83,8 +83,9 @@ class VaccinationAppointmentViewSet(ModelViewSet):
                 .values('vaccine__name')
                 .annotate(doses=Count('id'))
                 .order_by('vaccine__name')
+                .annotate(valid=Case(When(vaccine__required_doses__lte=F('doses'), then=True), default=False))
                 .values('vaccine__name', 'vaccine__required_doses', 'doses',
-                        valid=Value(F('required_doses') == F('doses')))
+                        'valid')
             )
             patient_data = AccountSerializer(instance=patient.first()).data
             patient_data['vaccines'] = vaccines
